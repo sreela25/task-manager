@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+
+    <script>
+    if(!localStorage.getItem("token")){
+        window.location="login.html";
+    }
+    </script>
+
+</head>
+
+<body>
+    <button onclick="logout()">
+        Logout
+    </button>
+
+<div class="container">
+
+    <div class="header">
+    <h2>📋 Task Manager</h2>
+
+    
+</div>
+
+    <h3 id="taskCount"></h3>
+
+    <input type="text" id="title" placeholder="Task Title">
+
+    <input type="text" id="description" placeholder="Description">
+
+    <input type="date" id="dueDate">
+
+    <button onclick="addTask()">Add Task</button>
+
+    <div id="tasks"></div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
