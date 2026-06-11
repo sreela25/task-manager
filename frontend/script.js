@@ -137,7 +137,7 @@ function logout() {
 
     localStorage.removeItem("token");
 
-    window.location = "login.html";
+    window.location = "index.html";
 }
 
 async function completeTask(id) {
