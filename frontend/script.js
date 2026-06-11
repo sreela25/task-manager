@@ -1,4 +1,4 @@
-const API = "https://task-manager-9jcw.onrender.com/";
+const API = "https://task-manager-9jcw.onrender.com";
 
 async function register(){
 
