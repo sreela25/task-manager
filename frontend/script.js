@@ -1,6 +1,6 @@
 const API = "https://task-manager-9jcw.onrender.com";
 
-async function register(){
+async function register() {
 
     const name =
     document.getElementById("name").value;
@@ -14,11 +14,11 @@ async function register(){
     const res = await fetch(
         `${API}/api/auth/register`,
         {
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
             },
-            body:JSON.stringify({
+            body: JSON.stringify({
                 name,
                 email,
                 password
@@ -30,10 +30,12 @@ async function register(){
 
     alert(data.message);
 
-    window.location="login.html";
+    if (res.ok) {
+        window.location = "login.html";
+    }
 }
 
-async function login(){
+async function login() {
 
     const email =
     document.getElementById("email").value;
@@ -44,11 +46,11 @@ async function login(){
     const res = await fetch(
         `${API}/api/auth/login`,
         {
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
             },
-            body:JSON.stringify({
+            body: JSON.stringify({
                 email,
                 password
             })
@@ -57,15 +59,22 @@ async function login(){
 
     const data = await res.json();
 
+    if (!res.ok) {
+        alert(data.message);
+        return;
+    }
+
     localStorage.setItem(
         "token",
         data.token
     );
 
-    window.location="dashboard.html";
+    alert("Login Successful");
+
+    window.location = "dashboard.html";
 }
 
-async function addTask(){
+async function addTask() {
 
     const title =
     document.getElementById("title").value;
@@ -79,19 +88,21 @@ async function addTask(){
     await fetch(
         `${API}/api/tasks`,
         {
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json",
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
                 "x-auth-token":
                 localStorage.getItem("token")
             },
-            body:JSON.stringify({
+            body: JSON.stringify({
                 title,
                 description,
                 dueDate
             })
         }
     );
+
+    alert("Task Added Successfully");
 
     document.getElementById("title").value = "";
     document.getElementById("description").value = "";
@@ -100,55 +111,63 @@ async function addTask(){
     loadTasks();
 }
 
-async function deleteTask(id){
+async function deleteTask(id) {
+
+    if (!confirm("Are you sure you want to delete this task?")) {
+        return;
+    }
 
     await fetch(
         `${API}/api/tasks/${id}`,
         {
-            method:"DELETE",
-            headers:{
+            method: "DELETE",
+            headers: {
                 "x-auth-token":
                 localStorage.getItem("token")
             }
         }
     );
 
+    alert("Task Deleted");
+
     loadTasks();
 }
 
-function logout(){
+function logout() {
 
     localStorage.removeItem("token");
 
-    window.location="login.html";
+    window.location = "login.html";
 }
 
-async function completeTask(id){
+async function completeTask(id) {
 
     await fetch(
         `${API}/api/tasks/${id}`,
         {
-            method:"PUT",
-            headers:{
-                "Content-Type":"application/json",
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
                 "x-auth-token":
                 localStorage.getItem("token")
             },
-            body:JSON.stringify({
-                status:"Completed"
+            body: JSON.stringify({
+                status: "Completed"
             })
         }
     );
 
+    alert("Task Completed");
+
     loadTasks();
 }
 
-async function loadTasks(){
+async function loadTasks() {
 
     const res = await fetch(
         `${API}/api/tasks`,
         {
-            headers:{
+            headers: {
                 "x-auth-token":
                 localStorage.getItem("token")
             }
@@ -159,7 +178,7 @@ async function loadTasks(){
 
     let html = "";
 
-    tasks.forEach(task=>{
+    tasks.forEach(task => {
 
         html += `
 <div class="task">
@@ -171,7 +190,7 @@ async function loadTasks(){
     <p>
         Status:
         <span class="${
-            task.status==="Completed"
+            task.status === "Completed"
             ? "completed"
             : "pending"
         }">
@@ -185,14 +204,19 @@ async function loadTasks(){
         .toLocaleDateString()}
     </p>
 
-    <button
-    onclick="completeTask('${task._id}')">
-    Complete
-    </button>
-    <br><br>
-    <button
-    onclick="deleteTask('${task._id}')">
-    Delete
+    ${
+        task.status === "Pending"
+        ?
+        `<button onclick="completeTask('${task._id}')">
+            Complete
+        </button>
+        <br><br>`
+        :
+        ""
+    }
+
+    <button onclick="deleteTask('${task._id}')">
+        Delete
     </button>
 
 </div>
@@ -201,13 +225,11 @@ async function loadTasks(){
 
     document.getElementById("tasks")
     .innerHTML = html;
-    document.getElementById("taskCount").innerText =`Total Tasks: ${tasks.length}`;
+
+    document.getElementById("taskCount")
+    .innerText = `Total Tasks: ${tasks.length}`;
 }
 
-if(document.getElementById("tasks")){
-    loadTasks();
-}
-
-if(document.getElementById("tasks")){
+if (document.getElementById("tasks")) {
     loadTasks();
 }
