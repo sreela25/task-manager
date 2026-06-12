@@ -14,27 +14,61 @@
 </head>
 
 <body>
-    <button onclick="logout()">
-        Logout
-    </button>
 
 <div class="container">
 
     <div class="header">
-    <h2>📋 Task Manager</h2>
+        <h2>📋 Task Manager</h2>
 
-    
-</div>
+        <button onclick="logout()">
+            Logout
+        </button>
+    </div>
+
+    <div class="stats">
+
+        <div class="card">
+            <h3 id="totalTasks">0</h3>
+            <p>Total Tasks</p>
+        </div>
+
+        <div class="card">
+            <h3 id="pendingTasks">0</h3>
+            <p>Pending</p>
+        </div>
+
+        <div class="card">
+            <h3 id="completedTasks">0</h3>
+            <p>Completed</p>
+        </div>
+
+    </div>
 
     <h3 id="taskCount"></h3>
 
-    <input type="text" id="title" placeholder="Task Title">
+    <input
+        type="text"
+        id="search"
+        placeholder="🔍 Search Tasks"
+        onkeyup="loadTasks()">
 
-    <input type="text" id="description" placeholder="Description">
+    <input
+        type="text"
+        id="title"
+        placeholder="Task Title">
 
-    <input type="date" id="dueDate">
+    <input
+        type="text"
+        id="description"
+        placeholder="Description">
 
-    <button onclick="addTask()">Add Task</button>
+    <input
+        type="date"
+        id="dueDate">
+
+    <button onclick="addTask()">
+        Add Task
+    </button>
 
     <div id="tasks"></div>
 

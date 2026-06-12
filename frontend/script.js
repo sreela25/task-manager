@@ -2,29 +2,21 @@ const API = "https://task-manager-9jcw.onrender.com";
 
 async function register() {
 
-    const name =
-    document.getElementById("name").value;
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-    const email =
-    document.getElementById("email").value;
-
-    const password =
-    document.getElementById("password").value;
-
-    const res = await fetch(
-        `${API}/api/auth/register`,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                name,
-                email,
-                password
-            })
-        }
-    );
+    const res = await fetch(`${API}/api/auth/register`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name,
+            email,
+            password
+        })
+    });
 
     const data = await res.json();
 
@@ -37,25 +29,19 @@ async function register() {
 
 async function login() {
 
-    const email =
-    document.getElementById("email").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-    const password =
-    document.getElementById("password").value;
-
-    const res = await fetch(
-        `${API}/api/auth/login`,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                email,
-                password
-            })
-        }
-    );
+    const res = await fetch(`${API}/api/auth/login`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            email,
+            password
+        })
+    });
 
     const data = await res.json();
 
@@ -64,10 +50,7 @@ async function login() {
         return;
     }
 
-    localStorage.setItem(
-        "token",
-        data.token
-    );
+    localStorage.setItem("token", data.token);
 
     alert("Login Successful");
 
@@ -76,31 +59,22 @@ async function login() {
 
 async function addTask() {
 
-    const title =
-    document.getElementById("title").value;
+    const title = document.getElementById("title").value;
+    const description = document.getElementById("description").value;
+    const dueDate = document.getElementById("dueDate").value;
 
-    const description =
-    document.getElementById("description").value;
-
-    const dueDate =
-    document.getElementById("dueDate").value;
-
-    await fetch(
-        `${API}/api/tasks`,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "x-auth-token":
-                localStorage.getItem("token")
-            },
-            body: JSON.stringify({
-                title,
-                description,
-                dueDate
-            })
-        }
-    );
+    await fetch(`${API}/api/tasks`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": localStorage.getItem("token")
+        },
+        body: JSON.stringify({
+            title,
+            description,
+            dueDate
+        })
+    });
 
     alert("Task Added Successfully");
 
@@ -117,18 +91,32 @@ async function deleteTask(id) {
         return;
     }
 
-    await fetch(
-        `${API}/api/tasks/${id}`,
-        {
-            method: "DELETE",
-            headers: {
-                "x-auth-token":
-                localStorage.getItem("token")
-            }
+    await fetch(`${API}/api/tasks/${id}`, {
+        method: "DELETE",
+        headers: {
+            "x-auth-token": localStorage.getItem("token")
         }
-    );
+    });
 
     alert("Task Deleted");
+
+    loadTasks();
+}
+
+async function completeTask(id) {
+
+    await fetch(`${API}/api/tasks/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": localStorage.getItem("token")
+        },
+        body: JSON.stringify({
+            status: "Completed"
+        })
+    });
+
+    alert("Task Completed");
 
     loadTasks();
 }
@@ -140,124 +128,118 @@ function logout() {
     window.location = "index.html";
 }
 
-async function completeTask(id) {
-
-    await fetch(
-        `${API}/api/tasks/${id}`,
-        {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                "x-auth-token":
-                localStorage.getItem("token")
-            },
-            body: JSON.stringify({
-                status: "Completed"
-            })
-        }
-    );
-
-    alert("Task Completed");
-
-    loadTasks();
-}
-
 async function loadTasks() {
 
-    const res = await fetch(
-        `${API}/api/tasks`,
-        {
-            headers: {
-                "x-auth-token":
-                localStorage.getItem("token")
-            }
+    const res = await fetch(`${API}/api/tasks`, {
+        headers: {
+            "x-auth-token": localStorage.getItem("token")
         }
-    );
+    });
 
     const tasks = await res.json();
+
     const total = tasks.length;
 
-const completed =
-tasks.filter(
-t => t.status === "Completed"
-).length;
+    const completed =
+    tasks.filter(
+        task => task.status === "Completed"
+    ).length;
 
-const pending =
-total - completed;
+    const pending = total - completed;
 
-document.getElementById("totalTasks")
-.innerText = total;
+    if(document.getElementById("totalTasks")){
+        document.getElementById("totalTasks")
+        .innerText = total;
+    }
 
-document.getElementById("completedTasks")
-.innerText = completed;
+    if(document.getElementById("completedTasks")){
+        document.getElementById("completedTasks")
+        .innerText = completed;
+    }
 
-document.getElementById("pendingTasks")
-.innerText = pending;
+    if(document.getElementById("pendingTasks")){
+        document.getElementById("pendingTasks")
+        .innerText = pending;
+    }
+
+    const searchBox =
+    document.getElementById("search");
+
+    const search =
+    searchBox
+    ? searchBox.value.toLowerCase()
+    : "";
 
     let html = "";
 
-    const search =
-document.getElementById("search")
-.value.toLowerCase();
-
-tasks
-.filter(task =>
-task.title
-.toLowerCase()
-.includes(search)
-)
-.forEach(task=>{
+    tasks
+    .filter(task =>
+        task.title
+        .toLowerCase()
+        .includes(search)
+    )
+    .forEach(task => {
 
         html += `
-<div class="task">
+        <div class="task">
 
-    <h3>${task.title}</h3>
+            <h3>${task.title}</h3>
 
-    <p>${task.description}</p>
+            <p>${task.description}</p>
 
-    <p>
-        Status:
-        <span class="${
-            task.status === "Completed"
-            ? "completed"
-            : "pending"
-        }">
-            ${task.status}
-        </span>
-    </p>
+            <p>
+                Status:
+                <span class="${
+                    task.status === "Completed"
+                    ? "completed"
+                    : "pending"
+                }">
+                    ${task.status}
+                </span>
+            </p>
 
-    <p>
-        Due:
-        ${new Date(task.dueDate)
-        .toLocaleDateString()}
-    </p>
+            <p>
+                Due:
+                ${new Date(task.dueDate)
+                .toLocaleDateString()}
+            </p>
 
-    ${
-        task.status === "Pending"
-        ?
-        `<button onclick="completeTask('${task._id}')">
-            Complete
-        </button>
-        <br><br>`
-        :
-        ""
-    }
+            ${
+                task.status === "Pending"
+                ?
+                `
+                <button
+                onclick="completeTask('${task._id}')">
+                    Complete
+                </button>
 
-    <button onclick="deleteTask('${task._id}')">
-        Delete
-    </button>
+                <br><br>
+                `
+                :
+                ""
+            }
 
-</div>
-`;
+            <button
+            onclick="deleteTask('${task._id}')">
+                Delete
+            </button>
+
+        </div>
+        `;
     });
 
-    document.getElementById("tasks")
-    .innerHTML = html;
+    if(document.getElementById("tasks")){
+        document.getElementById("tasks")
+        .innerHTML = html;
+    }
 
-    document.getElementById("taskCount")
-    .innerText = `Total Tasks: ${tasks.length}`;
+    if(document.getElementById("taskCount")){
+        document.getElementById("taskCount")
+        .innerText =
+        `Total Tasks: ${tasks.length}`;
+    }
 }
 
-if (document.getElementById("tasks")) {
+if(document.getElementById("tasks")){
     loadTasks();
 }
