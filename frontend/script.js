@@ -31,7 +31,7 @@ async function register() {
     alert(data.message);
 
     if (res.ok) {
-        window.location = "login.html";
+        window.location = "index.html";
     }
 }
 
@@ -175,10 +175,38 @@ async function loadTasks() {
     );
 
     const tasks = await res.json();
+    const total = tasks.length;
+
+const completed =
+tasks.filter(
+t => t.status === "Completed"
+).length;
+
+const pending =
+total - completed;
+
+document.getElementById("totalTasks")
+.innerText = total;
+
+document.getElementById("completedTasks")
+.innerText = completed;
+
+document.getElementById("pendingTasks")
+.innerText = pending;
 
     let html = "";
 
-    tasks.forEach(task => {
+    const search =
+document.getElementById("search")
+.value.toLowerCase();
+
+tasks
+.filter(task =>
+task.title
+.toLowerCase()
+.includes(search)
+)
+.forEach(task=>{
 
         html += `
 <div class="task">
