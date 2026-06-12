@@ -121,6 +121,43 @@ async function completeTask(id) {
     loadTasks();
 }
 
+async function editTask(
+    id,
+    oldTitle,
+    oldDescription
+) {
+
+    const title = prompt(
+        "Edit Title",
+        oldTitle
+    );
+
+    if (title === null) return;
+
+    const description = prompt(
+        "Edit Description",
+        oldDescription
+    );
+
+    if (description === null) return;
+
+    await fetch(`${API}/api/tasks/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": localStorage.getItem("token")
+        },
+        body: JSON.stringify({
+            title,
+            description
+        })
+    });
+
+    alert("Task Updated");
+
+    loadTasks();
+}
+
 function logout() {
 
     localStorage.removeItem("token");
@@ -148,18 +185,15 @@ async function loadTasks() {
     const pending = total - completed;
 
     if(document.getElementById("totalTasks")){
-        document.getElementById("totalTasks")
-        .innerText = total;
+        document.getElementById("totalTasks").innerText = total;
     }
 
     if(document.getElementById("completedTasks")){
-        document.getElementById("completedTasks")
-        .innerText = completed;
+        document.getElementById("completedTasks").innerText = completed;
     }
 
     if(document.getElementById("pendingTasks")){
-        document.getElementById("pendingTasks")
-        .innerText = pending;
+        document.getElementById("pendingTasks").innerText = pending;
     }
 
     const searchBox =
@@ -220,6 +254,17 @@ async function loadTasks() {
             }
 
             <button
+            onclick="editTask(
+                '${task._id}',
+                '${task.title}',
+                '${task.description}'
+            )">
+                Edit
+            </button>
+
+            <br><br>
+
+            <button
             onclick="deleteTask('${task._id}')">
                 Delete
             </button>
@@ -229,14 +274,12 @@ async function loadTasks() {
     });
 
     if(document.getElementById("tasks")){
-        document.getElementById("tasks")
-        .innerHTML = html;
+        document.getElementById("tasks").innerHTML = html;
     }
 
     if(document.getElementById("taskCount")){
         document.getElementById("taskCount")
-        .innerText =
-        `Total Tasks: ${tasks.length}`;
+        .innerText = `Total Tasks: ${tasks.length}`;
     }
 }
 
