@@ -61,6 +61,7 @@ async function addTask() {
 
     const title = document.getElementById("title").value;
     const description = document.getElementById("description").value;
+    const priority = document.getElementById("priority").value;
     const dueDate = document.getElementById("dueDate").value;
 
     await fetch(`${API}/api/tasks`, {
@@ -72,7 +73,8 @@ async function addTask() {
         body: JSON.stringify({
             title,
             description,
-            dueDate
+            dueDate,
+            priority
         })
     });
 
@@ -81,6 +83,7 @@ async function addTask() {
     document.getElementById("title").value = "";
     document.getElementById("description").value = "";
     document.getElementById("dueDate").value = "";
+    document.getElementById("priority").value ="Medium";
 
     loadTasks();
 }
@@ -124,7 +127,9 @@ async function completeTask(id) {
 async function editTask(
     id,
     oldTitle,
-    oldDescription
+    oldDescription,
+    oldStatus,
+    oldPriority
 ) {
 
     const title = prompt(
@@ -141,15 +146,32 @@ async function editTask(
 
     if (description === null) return;
 
+    const priority = prompt(
+        "Priority (High/Medium/Low)",
+        oldPriority
+    );
+
+    if(priority === null) return;
+
+    const status = prompt(
+        "Status (Pending / Completed)",
+        oldStatus
+    );
+
+    if (status === null) return;
+
     await fetch(`${API}/api/tasks/${id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
-            "x-auth-token": localStorage.getItem("token")
+            "x-auth-token":
+            localStorage.getItem("token")
         },
         body: JSON.stringify({
             title,
-            description
+            description,
+            status,
+            priority
         })
     });
 
@@ -222,6 +244,17 @@ async function loadTasks() {
             <p>${task.description}</p>
 
             <p>
+            Priority:
+            <span class="${
+                task.priority === "High"? "high"
+                : task.priority === "Medium"
+                ? "medium"
+                : "low"}">
+                ${task.priority}
+            </span>
+            </p>
+
+            <p>
                 Status:
                 <span class="${
                     task.status === "Completed"
@@ -255,10 +288,11 @@ async function loadTasks() {
 
             <button
             onclick="editTask(
-                '${task._id}',
-                '${task.title}',
-                '${task.description}'
-            )">
+'${task._id}',
+'${task.title}',
+'${task.description}',
+'${task.status}','${task.priority}'
+)">
                 Edit
             </button>
 

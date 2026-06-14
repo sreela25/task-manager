@@ -11,6 +11,7 @@ const router = express.Router();router.post("/", auth, async(req,res)=>{
             title:req.body.title,
             description:req.body.description,
             dueDate:req.body.dueDate,
+            priority:req.body.priority,
             userId:req.user.id
 
         });

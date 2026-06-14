@@ -28,6 +28,27 @@ input{
     margin-bottom:20px;
 }
 
+.high{
+    background:#fee2e2;
+    color:#b91c1c;
+    padding:5px 10px;
+    border-radius:20px;
+}
+
+.medium{
+    background:#fef3c7;
+    color:#92400e;
+    padding:5px 10px;
+    border-radius:20px;
+}
+
+.low{
+    background:#dcfce7;
+    color:#166534;
+    padding:5px 10px;
+    border-radius:20px;
+}
+
 button{
     width:100%;
     padding:10px;

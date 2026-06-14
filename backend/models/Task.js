@@ -7,14 +7,23 @@ const TaskSchema = new mongoose.Schema({
         required:true
     },
 
-    description:String,
+    description:{
+        type:String
+    },
 
     status:{
         type:String,
         default:"Pending"
     },
 
-    dueDate:Date,
+    priority:{
+        type:String,
+        default:"Medium"
+    },
+
+    dueDate:{
+        type:Date
+    },
 
     userId:{
         type:mongoose.Schema.Types.ObjectId,
@@ -23,4 +32,5 @@ const TaskSchema = new mongoose.Schema({
 
 });
 
-module.exports = mongoose.model("Task",TaskSchema);
+module.exports =
+mongoose.model("Task",TaskSchema);
